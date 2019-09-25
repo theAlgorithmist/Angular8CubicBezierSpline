@@ -1,8 +1,8 @@
 # Angular 8 and Typescript Math Toolkit Cubic Bezier Spline
 
-This is the code distribution for the Medium Article, _Cubic Bezier Splines With Angular 8 and PixiJS_ (url).
+This is the code distribution for the Medium Article, _[Cubic Bezier Splines With Angular 8 and PixiJS](https://medium.com/ngconf/cubic-bezier-splines-with-angular-8-and-pixijs-635b876c2473)_ .
 
-This is the distribution of the Typesript Math Toolkit cubic Bezier spline.  Spline construction and drawing are illustrated with an interactive Angular 8 demo that uses PIXI 4 for dynamic drawing.  The application allows a small number of interpolation points to be defined by clicking in the drawing area.  Click the 'Draw' button to compute and draw the cubic spline that smoothly interpolates these points.
+This distribution includes the Typescript Math Toolkit cubic Bezier spline.  Spline construction and drawing are illustrated with an interactive Angular 8 demo that uses PIXI 4 for dynamic drawing.  The application allows a small number of interpolation points to be defined by clicking in the drawing area.  Click the 'Draw' button to compute and draw the cubic spline that smoothly interpolates these points.
 
 
 Author:  Jim Armstrong - [The Algorithmist]
