@@ -50,8 +50,7 @@ export class TSMT$BezierSplineControl
   protected _uY: number;              // unit vector, direction of bisector, y-coordinate
   protected _dist: number;            // distance measure from segment intersection, along direction of bisector
 
-  protected _segments: Array<IControlPoints>; // cubic bezier geometric constraints for each segement
-  protected _x: Array<number>;                // x-coordinate of interpolation points
+  protected _segments: Array<IControlPoints>; // cubic bezier geometric constraints for each segment
     
   constructor()
   {
@@ -70,13 +69,12 @@ export class TSMT$BezierSplineControl
     this._dY2      = 0;
     this._d1       = 0;
     this._d2       = 0;
-    this._tension  = 0.35;
+    this._tension  = 0.2;
     this._uX       = 0;
     this._uY       = 0;
     this._dist     = 0;
 
     this._segments = new Array<IControlPoints>();
-    this._x        = new Array<number>();
   }
 
  /**
@@ -111,7 +109,7 @@ export class TSMT$BezierSplineControl
   */
   public getSegment(i: number): IControlPoints
   {
-    if( i < 0 || i > this._segments.length-1 ) {
+    if (i < 0 || i > this._segments.length-1) {
       return {x0: 0, y0: 0, cx: 0, cy: 0, cx1: 0, cy1: 0, x1: 0, y1: 0};
     }
 
@@ -127,7 +125,7 @@ export class TSMT$BezierSplineControl
   public construct(x: Array<number>, y: Array<number>): void
   {
     const numPoints: number = x.length;
-    const count: number = numPoints - 1;
+    const count: number     = numPoints - 1;
 
     // Need at least one cubic in the spline
     if (count < 2) {
@@ -138,8 +136,7 @@ export class TSMT$BezierSplineControl
     let j: number;
     this._segments.length = 0;
 
-    for (i = 0; i < count; ++i)
-    {
+    for (i = 0; i < count; ++i) {
       this._segments[i] = {x0: 0, y0: 0, cx: 0, cy: 0, cx1: 0, cy1: 0, x1: 0, y1: 0};
     }
 
@@ -326,9 +323,10 @@ export class TSMT$BezierSplineControl
     let dt: number;
     if (this._dist > TSMT$BezierSplineControl.ZERO_TOL)
     {
+      dt = t*this._d2;
+
       if (((y[1] - y[n2])*(x[0] - x[n2]) > (y[0] -y[n2])*(x[1] - x[n2])))
       {
-        dt      = t*this._d2;
         this._bXNL = x[0] + dt*this._uY;
         this._bYNL = y[0] - dt*this._uX;
       }
@@ -360,7 +358,8 @@ export class TSMT$BezierSplineControl
       {
         // clockwise vertices
         this.__CW(0, t, x, y);
-      } else
+      }
+      else
       {
         // CCW
         this.__CCW(0, t, x, y);
@@ -429,10 +428,7 @@ export class TSMT$BezierSplineControl
   // Compute right geometric constrains (closed spline)
   protected __rightClosed(t: number, x: Array<number>, y: Array<number>): void
   {
-    // no additional computations are required as the P2X, P2Y point is a reflection of the P1X, P1Y point
-    // from the very first control segment
-    const count: number = x.length-1;
-
+    const count: number        = x.length-1;
     const c0: IControlPoints   = this._segments[0];
     const coef: IControlPoints = this._segments[count-1];
 
@@ -440,8 +436,19 @@ export class TSMT$BezierSplineControl
     coef.y0  = y[count-1];
     coef.cx  = this._bXNL;
     coef.cy  = this._bYNL;
-    coef.cx1 = 2.0*x[0] - c0.cx;
-    coef.cy1 = 2.0*y[0] - c0.cy;
+
+    const dx: number = coef.cx - coef.x0;
+    const dy: number = coef.cy - coef.y0;
+    const d: number  = Math.sqrt(dx*dx + dy*dy);
+
+    const dx2: number = c0.x0 - c0.cx;
+    const dy2: number = c0.y0 - c0.cy;
+    const d2: number  = Math.sqrt(dx2*dx2 + dy2*dy2);
+    const ux: number  = dx2 / d2;
+    const uy: number  = dy2 / d2;
+
+    coef.cx1 = x[0] + d*ux;
+    coef.cy1 = y[0] + d*uy;
     coef.x1  = x[count];           // knot number 'count' and knot 0 should be the same for a closed spline
     coef.y1  = y[count];
   }
@@ -454,7 +461,7 @@ export class TSMT$BezierSplineControl
     this._bXNR = x[i+1] - dt*this._uY;
     this._bYNR = y[i+1] + dt*this._uX;
 
-    dt          = t*this._d2;
+    dt         = t*this._d2;
     this._bXNL = x[i+1] + dt*this._uY;
     this._bYNL = y[i+1] - dt*this._uX;
   }
